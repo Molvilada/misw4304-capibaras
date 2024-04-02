@@ -1,28 +1,28 @@
 services:
-  app_flasK:
+  blacklist:
     build: .
     ports:
       - "8000:8000"
     environment:
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_HOST=appdb
-      - DB_PORT=5432
-      - DB_NAME=user
+      - RDS_USERNAME=postgres
+      - RDS_PASSWORD=postgres
+      - RDS_HOST=blacklistdb
+      - RDS_PORT=5432
+      - RDS_DB_NAME=blacklist
     networks:
-        - app_net
+        - blacklist_net
     depends_on:
       appdb:
         condition: service_healthy
 
-  appdb:
+  blacklistdb:
     image: postgres:15
     networks:
-        - app_net
+        - blacklist_net
     environment:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
-        - POSTGRES_DB=user
+        - POSTGRES_DB=blacklist
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -30,4 +30,4 @@ services:
       retries: 10
 
 networks:
-  app_net:
+  blacklist_net:
