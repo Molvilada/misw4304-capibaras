@@ -1,0 +1,33 @@
+services:
+  app_flasK:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=appdb
+      - DB_PORT=5432
+      - DB_NAME=user
+    networks:
+        - app_net
+    depends_on:
+      appdb:
+        condition: service_healthy
+
+  appdb:
+    image: postgres:15
+    networks:
+        - app_net
+    environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=user
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  app_net:
