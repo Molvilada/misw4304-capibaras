@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from views import BlueprintHealth
 from db import db
 
 def get_rds_url():
@@ -31,6 +32,6 @@ def create_app(database=None):
     with app.app_context():
         db.create_all()
 
-    # Register the blueprints
+    app.register_blueprint(BlueprintHealth, url_prefix='/blacklists')
 
     return app
