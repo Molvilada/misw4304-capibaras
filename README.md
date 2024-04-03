@@ -58,7 +58,7 @@ El microservicio se ubica en: http://127.0.0.1:8000/
 
 **Nota**: En un entorno de desarrollo la aplicación también puede correr con una base de datos SQLite sin necesidad de tener una base de datos Postgres corriendo. **Este modo no está soportado oficialmente**.
 ```bash
-flask --app "app:create_app('sqlite:///db.sqlite')" run -p 8000
+flask --app "application:create_app('sqlite:///db.sqlite')" run -p 8000
 ```
 
 ## Uso
