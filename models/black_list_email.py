@@ -6,4 +6,5 @@ class BlacklistEmail(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     app_uuid = db.Column(db.String(36), nullable=False)
     blocked_reason = db.Column(db.String(255))
+    ip_address = db.Column(db.String(45), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)

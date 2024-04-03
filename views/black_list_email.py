@@ -6,12 +6,14 @@ from sqlalchemy.exc import DatabaseError
 from models.black_list_email import BlacklistEmail
 from .util import class_route
 from flask.views import MethodView
+from flask import request 
+
+
 
 class CreateRequestSchema(Schema):
     email = fields.String(required=True)
     app_uuid = fields.String(required=True)
     blocked_reason = fields.String(required=True)
-    
 
 
 blp = Blueprint("Black List Email", __name__)
@@ -31,9 +33,10 @@ class BlacklistEmailResource(MethodView):
             email=emailBlock['email'],
             app_uuid=emailBlock['app_uuid'],
             blocked_reason=emailBlock.get('blocked_reason'),
+            ip_address=request.remote_addr,
             created_at=datetime.now(timezone.utc).replace(microsecond=0)
         )
-                 
+                
         try:
             db.session.add(new_blacklist_email)
             db.session.commit()
