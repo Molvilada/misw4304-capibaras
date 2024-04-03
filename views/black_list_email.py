@@ -1,15 +1,11 @@
-from importlib.resources import Resource
-from sqlalchemy.exc import DatabaseError
-from flask import Blueprint, request, Response, jsonify, g
-
-from models.black_list_email import BlacklistEmail
-from .util import class_route
+from flask import Blueprint, request, Response, jsonify
 from marshmallow import Schema, fields
 from datetime import datetime, timezone
 from db import db
-
-
-blp = Blueprint("black_list_email", __name__)
+from sqlalchemy.exc import DatabaseError
+from models.black_list_email import BlacklistEmail
+from .util import class_route
+from flask.views import MethodView
 
 class CreateRequestSchema(Schema):
     email = fields.String(required=True)
@@ -18,8 +14,13 @@ class CreateRequestSchema(Schema):
     ip_address = fields.String(required=True)
     
 
-@class_route(blp, "/blacklists")
-class BlacklistEmailResource(Resource):
+
+blp = Blueprint("Black List Email", __name__)
+
+@class_route(blp, "/blacklists", methods=['POST', 'GET'])
+class BlacklistEmailResource(MethodView):
+    init_every_request = False
+    
     def post(self):
         try:
             emailBlock = CreateRequestSchema().loads(request.data)
@@ -27,8 +28,14 @@ class BlacklistEmailResource(Resource):
             return Response(str(ex), status=400, mimetype='text/plain')
         
        
-        new_blacklist_email = BlacklistEmail(emailBlock.email, emailBlock.app_uuid, emailBlock.blocked_reason, emailBlock.ip_address,  datetime.now(timezone.utc).replace(microsecond=0))
-        
+        new_blacklist_email = BlacklistEmail(
+            email=emailBlock['email'],
+            app_uuid=emailBlock['app_uuid'],
+            blocked_reason=emailBlock.get('blocked_reason'),
+            ip_address=emailBlock['ip_address'],
+            created_at=datetime.now(timezone.utc).replace(microsecond=0)
+        )
+                
         try:
             db.session.add(new_blacklist_email)
             db.session.commit()
@@ -36,6 +43,6 @@ class BlacklistEmailResource(Resource):
             return Response("Error al agregar el email a la lista negra", status=412, mimetype='text/plain')
 
         
-        return jsonify({'message': 'El Email se agrego correctamente'}), 201
+        return jsonify({'message': 'El Email se agregó correctamente'}), 201
     
    
