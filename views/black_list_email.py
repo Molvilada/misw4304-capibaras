@@ -11,7 +11,6 @@ class CreateRequestSchema(Schema):
     email = fields.String(required=True)
     app_uuid = fields.String(required=True)
     blocked_reason = fields.String(required=True)
-    ip_address = fields.String(required=True)
     
 
 
@@ -32,10 +31,9 @@ class BlacklistEmailResource(MethodView):
             email=emailBlock['email'],
             app_uuid=emailBlock['app_uuid'],
             blocked_reason=emailBlock.get('blocked_reason'),
-            ip_address=emailBlock['ip_address'],
             created_at=datetime.now(timezone.utc).replace(microsecond=0)
         )
-                
+                 
         try:
             db.session.add(new_blacklist_email)
             db.session.commit()
