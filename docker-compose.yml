@@ -12,7 +12,7 @@ services:
     networks:
         - blacklist_net
     depends_on:
-      appdb:
+      blacklistdb:
         condition: service_healthy
 
   blacklistdb:
