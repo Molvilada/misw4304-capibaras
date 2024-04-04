@@ -23,7 +23,7 @@ def verify_token():
 
     if token != bearer_token:
         error = {"msg": "Invalid token"}
-        return Response(ErrorResponseSchema().dumps(error), status=403)
+        return Response(ErrorResponseSchema().dumps(error), status=401)
 
     return None
 
