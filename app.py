@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from views import BlueprintHealth
 from views import Blueprint
+from views import BlueprintVerify
 
 from db import db
 
@@ -36,5 +37,6 @@ def create_app(database=None):
 
     app.register_blueprint(BlueprintHealth, url_prefix='/blacklists')
     app.register_blueprint(Blueprint)
+    app.register_blueprint(BlueprintVerify)
 
     return app
