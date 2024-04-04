@@ -1,11 +1,9 @@
-import requests
-from flask import Blueprint, request, Response, jsonify, g, abort
+import re
+from flask import Blueprint, request, Response, jsonify
 from flask.views import MethodView
-
+from models import BlacklistEmail
 from .schemas.schemas import ErrorResponseSchema
 from .util import class_route
-from db import db
-from models import BlacklistEmail
 
 # Blueprint for the blacklists
 blp = Blueprint("Black List Email Verification", __name__)
@@ -30,8 +28,28 @@ def verify_token():
     return None
 
 
+# Validate email format
+def is_valid_email(email):
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+    if re.match(regex, email):
+        return True
+    return False
+
+
 # Class to verify if an email is in the blacklist
 @class_route(blp, "/blacklists/<string:email>", methods=['GET'])
 class BlacklistEmailVerification(MethodView):
     def get(self, email):
-        return jsonify({'melo': "sisas"}), 200
+        if not is_valid_email(email):
+            return Response("Invalid email format", status=400)
+
+        blacklisted_email = BlacklistEmail.query.filter_by(email=email).first()
+
+        if blacklisted_email:
+            is_blacklisted = True
+            reason = blacklisted_email.blocked_reason
+        else:
+            is_blacklisted = False
+            reason = "The email is not in the blacklist"
+
+        return jsonify({'is_blacklisted': is_blacklisted, 'reason': reason}), 200
