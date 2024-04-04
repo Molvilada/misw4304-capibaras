@@ -6,3 +6,4 @@ marshmallow==3.21.1
 pg8000==1.31.1
 SQLAlchemy==2.0.29
 requests==2.31.0
+Faker==22.5.1
